@@ -130,8 +130,18 @@ set_current_web_env_dir() {
 
 	current_env_dir=$(cd "$1" && pwd) || die 4
 
+	if [ ! -z "$(get_all_built_projects)" ]; then
+		read -p "All current built projects will be untracked. Continue? y/N: " answer
+
+		if [ "$answer" != "y" ]; then
+			stop
+		fi
+	fi
+
 	set_propertie_of_key "$WEB_ENV_DIR_KEY" "$current_env_dir"
 	WEB_ENV_DIR="$current_env_dir"
+
+	$(sed -i "/^$SEPARATOR_WEBPM_BUILT_PROJECTS$/q" "$PROPERTIES_FILE_NAME")
 
 	sends_complete_message "Set"
 }
