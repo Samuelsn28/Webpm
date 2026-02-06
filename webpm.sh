@@ -1,6 +1,7 @@
 #!/bin/bash
 
 PROPERTIES_FILE_NAME=".manage-properties"
+SEPARATOR_WEBPM_BUILT_PROJECTS="----built projects----"
 
 WEB_ENV_DIR_KEY="web-enviroment-dir"
 WEB_ENV_DIR="/var/www/html"
@@ -42,6 +43,10 @@ text_help() {
 	echo -e "	\033[0;12m$1 \033[1;00m"
 }
 
+text_strong() {
+	printf "\033[1;12m$1\033[1;00m"
+}
+
 is_valid_directory() {
 	[ -n "$1" ] && [ -d "$1" ]
 }
@@ -64,6 +69,10 @@ is_valid_builded_project_name() {
 
 check_propertie_existence() {
 	[ "$(grep "^$1=")" -eq 0 ]
+}
+
+get_all_built_projects() {
+	echo "$(awk -v mark="$SEPARATOR_WEBPM_BUILT_PROJECTS" '$0 == mark {found=1; next} found' $PROPERTIES_FILE_NAME)"
 }
 
 get_propertie_of_key() {
@@ -112,6 +121,7 @@ update_current_web_env_dir() {
 		WEB_ENV_DIR=$(get_propertie_of_key "$WEB_ENV_DIR_KEY")
 	else
 		echo "$WEB_ENV_DIR_KEY=$WEB_ENV_DIR" > "$PROPERTIES_FILE_NAME"
+		echo "$SEPARATOR_WEBPM_BUILT_PROJECTS" >> "$PROPERTIES_FILE_NAME"
 	fi
 }
 
@@ -169,8 +179,15 @@ build_project() {
 	sends_complete_message "Build"
 }
 
-show_builded_projects() {
-	echo "showing"
+show_built_projects() {
+	printf "All built projects: \n\n"
+
+	text_strong "Project"
+	text_strong " | Default save dir \n"
+	local built_projects=$(get_all_built_projects)
+
+	format_output=$(printf '%s\n' "$built_projects" | sed 's|=| --> |')
+	printf "$format_output \n\n"
 }
 
 save_project() {
@@ -254,7 +271,7 @@ elif [ "$1" = "finish" ]; then
 elif [ "$1" = "web-environment" -o "$1" = "we" ]; then
 	set_current_web_env_dir "$2"
 elif [ "$1" = "show" ]; then
-	show_builded_projects
+	show_built_projects
 elif [ "$1" = "help" ]; then
 	help
 else 
