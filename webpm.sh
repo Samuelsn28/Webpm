@@ -12,9 +12,9 @@ error[4]="The passed directory doesn't exist."
 error[5]="There's no permission to write in save location"
 error[6]="Error: properties file is missing."
 error[7]="Error: Key can't be empty or space."
-error[8]="There's no permission to write in builded project location $WEB_ENV_DIR/$2"
+error[8]="There's no permission to write in built project location $WEB_ENV_DIR/$2"
 
-warn[1]="Can't possible remove builded project in $WEB_ENV_DIR, but the project was saved."
+warn[1]="Can't possible remove built project in $WEB_ENV_DIR, but the project was saved."
 
 die() {
 	echo -e "\033[1;91m(!!) ${error[$1]} \033[1;00m"
@@ -32,6 +32,14 @@ sends_warn() {
 
 sends_complete_message() {
 	echo -e "\033[1;92m(#) $1 complete. \033[1;00m"
+}
+
+title_help() {
+	echo -e " \n\033[1;12m $1 \033[1;00m"
+}
+
+text_help() {
+	echo -e "	\033[0;12m$1 \033[1;00m"
 }
 
 is_valid_directory() {
@@ -214,12 +222,26 @@ finish_project() {
 }
 
 help() {
-	printf "\nAvaliable Operations: \n\n"
-	printf " build <name> <project dir>\n	Build the project passed in <project dir> (or current directory if empty) in the current web_env_dir setting <name> as builded name. \n\n"
-	printf " finish <builded name> <save dir (optional)>\n	Finish builded project with name <builded name> and save it in the <save dir>. If <save dir> wasn't passed, webpm will save it in the dir where it was builded. \n\n"
-	printf " web-enviroment (or we) <new>\n	Set web_env_dir as <new>.\n\n"
-	printf " show \n	Show current builded projects.\n\n"
+	printf "Available Operations: \n"
 
+	title_help "build <name> [project dir]"
+	text_help "Build the project passed in <project dir> in the current web_env_dir setting <name> as build name."
+	text_help "Webpm will build current directory if <project dir> isn't provided."
+
+	title_help "finish <build name> [save dir]"
+	text_help "Finish built project with name <build name> and save it in the <save dir>."
+	text_help "If <save dir> is empty, Webpm will save it in the dir where it was built."
+
+	title_help "web-environment (or we) <new dir>"
+	text_help "Set web_env_dir as <new dir>."
+
+	title_help "show"
+	text_help "Show current built projects."
+
+	title_help "help"
+	text_help "Show available operations."
+
+	printf "\n"
 }
 
 
@@ -229,7 +251,7 @@ if [ "$1" = "build" ]; then
 	build_project "$2" "$3"
 elif [ "$1" = "finish" ]; then
 	finish_project "$2" "$3"
-elif [ "$1" = "web-enviroment" -o "$1" = "we" ]; then
+elif [ "$1" = "web-environment" -o "$1" = "we" ]; then
 	set_current_web_env_dir "$2"
 elif [ "$1" = "show" ]; then
 	show_builded_projects
