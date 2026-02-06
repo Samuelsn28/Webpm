@@ -5,7 +5,7 @@ PROPERTIES_FILE_NAME=".manage-properties"
 WEB_ENV_DIR_KEY="web-enviroment-dir"
 WEB_ENV_DIR="/var/www/html"
 
-error[1]="There's no builded project with the passed name."
+error[1]="The passed name is invalid."
 error[2]="Directory $WEB_ENV_DIR is missing."
 error[3]="There's no permission to write in $WEB_ENV_DIR. Permissions: $(ls -la "$WEB_ENV_DIR")"
 error[4]="The passed directory doesn't exist."
@@ -51,7 +51,7 @@ is_valid_key() {
 }
 
 is_valid_builded_project_name() {
-	is_valid_key "$1"
+	is_valid_key "$1" && [ "$1" != "$WEB_ENV_DIR_KEY" ]
 }
 
 check_propertie_existence() {
@@ -161,6 +161,10 @@ build_project() {
 	sends_complete_message "Build"
 }
 
+show_builded_projects() {
+	echo "showing"
+}
+
 save_project() {
 	local builded_project_name="$1"
 	local save_location_dir="$2"
@@ -209,6 +213,15 @@ finish_project() {
 	sends_complete_message "Save"
 }
 
+help() {
+	printf "\nAvaliable Operations: \n\n"
+	printf " build <name> <project dir>\n	Build the project passed in <project dir> (or current directory if empty) in the current web_env_dir setting <name> as builded name. \n\n"
+	printf " finish <builded name> <save dir (optional)>\n	Finish builded project with name <builded name> and save it in the <save dir>. If <save dir> wasn't passed, webpm will save it in the dir where it was builded. \n\n"
+	printf " web-enviroment (or we) <new>\n	Set web_env_dir as <new>.\n\n"
+	printf " show \n	Show current builded projects.\n\n"
+
+}
+
 
 update_current_web_env_dir
 
@@ -218,6 +231,12 @@ elif [ "$1" = "finish" ]; then
 	finish_project "$2" "$3"
 elif [ "$1" = "web-enviroment" -o "$1" = "we" ]; then
 	set_current_web_env_dir "$2"
+elif [ "$1" = "show" ]; then
+	show_builded_projects
+elif [ "$1" = "help" ]; then
+	help
+else 
+	echo "Command invalid. Use help to see operations."
 fi
 
 
