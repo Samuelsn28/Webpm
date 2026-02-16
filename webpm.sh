@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROPERTIES_FILE_NAME=".manage-properties"
+PROPERTIES_FILE_NAME="$(dirname $(readlink -f $0))/.manage-properties"
 SEPARATOR_WEBPM_BUILT_PROJECTS="----built projects----"
 
 WEB_ENV_DIR_KEY="web-enviroment-dir"
